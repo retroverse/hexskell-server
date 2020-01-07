@@ -1,0 +1,31 @@
+{
+  "name": "hexskell-server",
+  "version": "1.0.0",
+  "description": "Hexskell backend client",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/retroverse/hexskell-server.git"
+  },
+  "keywords": [
+    "server",
+    "hex",
+    "hexskell"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/retroverse/hexskell-server/issues"
+  },
+  "homepage": "https://github.com/retroverse/hexskell-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
