@@ -1,19 +1,20 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
+const { ApolloServer } = require('apollo-server-express')
 
-const routes = require('./src/route/routes')
+const { resolvers, typeDefs } = require('./src/schema/schema')
 const {PORT, MONGO_DB_NAME, MONGO_DB_IP} = require('./src/config')
 
 // Create app
 const app = express()
 
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
-app.use('/', routes)
+const server = new ApolloServer({
+  resolvers,
+  typeDefs
+})
+server.applyMiddleware({app})
 
 // Mongoose global config
-mongoose.set('useFindAndModify', false)
 mongoose.set('useNewUrlParser', true)
 mongoose.set('useUnifiedTopology', true)
 
@@ -24,6 +25,7 @@ mongoose.connect(`mongodb://${MONGO_DB_IP}/${MONGO_DB_NAME}`)
     console.log('Connected to mongo database')
     app.listen(PORT, () => {
       console.log(`Listening on ${PORT}.`)
+      console.log(`🚀 server available at http://localhost:${PORT}${server.graphqlPath}`)
     })
   })
   .catch(err => console.error(`Failed to connect to database: ${err}`))
