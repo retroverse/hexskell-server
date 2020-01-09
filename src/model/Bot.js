@@ -4,11 +4,11 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 
 const Bot = new Schema({
   name: String,
-  authorUser: ObjectId, // User Id
+  author: {type: ObjectId, ref: 'user'},
   dateCreated: { type: Date, default: Date.now },
   code: String,
-  homeMatches: [ObjectId], // Match Id
-  awayMatches: [ObjectId] // Match Id
+  homeMatches: [{type: ObjectId, ref: 'match'}],
+  awayMatches: [{type: ObjectId, ref: 'match'}]
 })
 
 module.exports = mongoose.model('bot', Bot)

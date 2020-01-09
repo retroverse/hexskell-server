@@ -1,10 +1,12 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const User = new Schema({
   displayName: String,
   email: String,
-  dateJoined: { type: Date, default: Date.now }
+  dateJoined: { type: Date, default: Date.now },
+  createdBots: [{type: ObjectId, ref: 'bot'}]
 })
 
 module.exports = mongoose.model('user', User)
