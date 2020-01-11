@@ -3,14 +3,19 @@ const mongoose = require('mongoose')
 const { ApolloServer } = require('apollo-server-express')
 
 const { resolvers, typeDefs } = require('./src/schema/schema')
+const isAuth = require('./src/middleware/is-auth')
 const {PORT, MONGO_DB_NAME, MONGO_DB_IP} = require('./src/config')
 
 // Create app
 const app = express()
 
+// Apply custom middleware
+app.use(isAuth)
+
 const server = new ApolloServer({
   resolvers,
-  typeDefs
+  typeDefs,
+  context: async ({req}) => req
 })
 server.applyMiddleware({app})
 
