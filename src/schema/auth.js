@@ -34,4 +34,4 @@ const ensureOwnBot = async (id, isAuth, userID) => {
   return bot
 }
 
-module.exports = { ensureOwnBot }
+module.exports = { ensureOwnBot, getMe }

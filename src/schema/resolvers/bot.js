@@ -20,7 +20,7 @@ const botResolvers = {
       }
 
       // Create the new bot
-      let bot = new Bot({name, code})
+      let bot = new Bot({name, code, dateCreated: (new Date())})
       bot.author = userID
 
       // Add to user list

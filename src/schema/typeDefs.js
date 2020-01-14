@@ -5,12 +5,15 @@ const typeDefs = gql`
     id: ID!
     name: String!
     code: String!
+    author: User!
+    dateCreated: String!
   }
 
   type User {
     id: ID!
     displayName: String!
     dateJoined: String!
+    createdBots: [Bot!]!
   }
   
   type Query {
@@ -19,8 +22,8 @@ const typeDefs = gql`
     bot(id: ID, name: String): Bot
 
     # Users
-    users(dateJoined: String): [User!]!
-    user(id: ID, displayName: String, dateJoined: String): User
+    users: [User!]!
+    user(id: ID, displayName: String): User
   }
 
   type Mutation {
@@ -30,7 +33,7 @@ const typeDefs = gql`
     setBot(id: ID!, name: String, code: String): Bot
   
     # Users
-    newUser(displayName: String!): User!
+    newUser(displayName: String!, email: String!): User!
     removeUser(id: ID!): User
     setUser(id: ID!, displayName: String): User
   }
