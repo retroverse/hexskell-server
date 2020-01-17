@@ -57,6 +57,7 @@ const typeDefs = gql`
     bot(id: ID, name: String): Bot
 
     # Users
+    me: User  # uses session to return info on currently logged-in user
     users: [User!]!
     user(id: ID, displayName: String): User
 
@@ -73,9 +74,8 @@ const typeDefs = gql`
     unpublishBot(id: ID!): Bot
   
     # Users
-    newUser(displayName: String!, email: String!): User!
     removeUser(id: ID!): User
-    setUser(id: ID!, displayName: String): User
+    setUser(displayName: String!): User
 
     # Matches
     competeBots(competitors: [ID!]!): Match

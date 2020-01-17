@@ -3,7 +3,7 @@ const Match = require('../../model/Match')
 const { find, findOne } = require('../../util/findModel')
 const { ensureOwnBot, getMe } = require('../auth')
 const { resolveBot } = require('./props')
-const { performTournament } = require('../../util/tournament')
+const { performTournament } = require('../../tournament')
 
 const botResolvers = {
   Query: {
@@ -97,7 +97,6 @@ const botResolvers = {
       // Save bot and resolve query properties
       return bot.save().then(resolveBot)
     },
-    // #TODO: Remove all matches that include this bot
     removeBot: async (_, {id}, {isAuth, userID}) => {
       // Check auth and that bot is own
       let bot = await ensureOwnBot(id, isAuth, userID)
@@ -118,9 +117,13 @@ const botResolvers = {
         throw Error('Cannot update an already published bot')
       }
 
-      // Update bot then resolve and return
-      let updated = await Bot.findByIdAndUpdate(id, {name, code}, {omitUndefined: true})
-      return resolveBot(updated)
+      // Update bot
+      bot.name = name
+      bot.code = code
+      await bot.save()
+
+      // Resolve and return
+      return resolveBot(bot)
     }
   }
 }

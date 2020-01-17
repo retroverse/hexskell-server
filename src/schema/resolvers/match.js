@@ -2,7 +2,7 @@ const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
 const { resolveMatch } = require('./props')
 const { find } = require('../../util/findModel')
-const { performMatch } = require('../../util/tournament')
+const { performMatch } = require('../../tournament')
 
 const resolvers = {
   Query: {

@@ -4,7 +4,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId
 
 const User = new Schema({
   displayName: String,
-  email: String,
+  googleID: String,
   dateJoined: { type: Date, default: Date.now },
   createdBots: [{type: ObjectId, ref: 'bot'}]
 })

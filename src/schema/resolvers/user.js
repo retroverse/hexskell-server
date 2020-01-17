@@ -11,36 +11,14 @@ const resolvers = {
       find(User, {}, resolveUser),
 
     user: (_, {id, displayName, dateJoined}) =>
-      findOne(User, {_id: id, displayName}, resolveUser)
+      findOne(User, {_id: id, displayName}, resolveUser),
+
+    me: async (_, args, {isAuth, userID}) => {
+      let user = await getMe(isAuth, userID)
+      return resolveUser(user)
+    }
   },
   Mutation: {
-    newUser: async (_, {displayName, email}) => {
-      // Is email already registered?
-      let usersWithEmail = await User.find({email})
-      if (usersWithEmail.length > 0) {
-        throw Error(`Email "${email}" is already registered`)
-      }
-
-      // Is display name taken?
-      let usersWithName = await User.find({displayName})
-      if (usersWithName.length > 0) {
-        throw Error(`Display name "${displayName}" is unavailable`)
-      }
-
-      // Create user
-      let user = new User({
-        displayName,
-        email,
-        dateJoined: (new Date())
-      })
-
-      // Save user
-      await user.save()
-
-      // Resolve and return
-      return resolveUser(user)
-    },
-
     setUser: async (_, {displayName}, {isAuth, userID}) => {
       // Does user exist?
       let user = await getMe(isAuth, userID)
@@ -50,17 +28,12 @@ const resolvers = {
         throw Error(`Display name is already "${displayName}"`)
       }
 
-      // Is name already taken?
-      let usersWithName = await User.find({displayName})
-      if (usersWithName.length > 0) {
-        throw Error(`Display name "${displayName}" is unavailable`)
-      }
-
       // Update user
-      let updatedUser = await Bot.findByIdAndUpdate(userID, {displayName}, {omitUndefined: true})
+      user.displayName = displayName
+      await user.save()
 
-      // Resolve an dreturn
-      return resolveUser(updatedUser)
+      // Resolve and return
+      return resolveUser(user)
     }
   }
 }

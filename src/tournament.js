@@ -1,4 +1,4 @@
-const hexskell = require('../util/hexskell')
+const hexskell = require('./util/hexskell')
 
 const NUMBER_ROUNDS = 4 // must be even
 
