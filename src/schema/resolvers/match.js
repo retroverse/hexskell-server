@@ -11,7 +11,7 @@ const resolvers = {
   },
   Mutation: {
     removeMatches: _ => Match.deleteMany({}).then(_ => []),
-    competeBots: async (_, {competitors}) => {
+    competeBots: async (_, { competitors }) => {
       // Get competitors from ids
       if (competitors.length !== 2) {
         throw new UserInputError('Bad Input: Mutation requires exactly two competitors')
@@ -19,17 +19,17 @@ const resolvers = {
       const [compA, compB] = await Promise.all(competitors.map(id => Bot.findById(id)))
 
       // Do we have them?
-      [compA, compB].forEach((bot, i) => {
+      ;[compA, compB].forEach((bot, i) => {
         if (!bot) {
           throw new UserInputError(`Bad Input: No such bot with id "${competitors[i]}"`)
         }
       })
 
       // Perform match
-      let matchResult = await performMatch(compA, compB)
+      const matchResult = await performMatch(compA, compB)
 
       // Create match document (isn't saved)
-      let match = new Match({...matchResult})
+      const match = new Match({ ...matchResult })
 
       // Resolve and return
       return resolveMatch(match)

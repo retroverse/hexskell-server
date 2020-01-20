@@ -6,7 +6,7 @@ const performTournament = async (newBot, competitors) => {
   // the new bot faces off against all competitors
   // returns a list of match results (not documents)
 
-  let matches = await Promise.all(competitors.map(competitor => performMatch(newBot, competitor)))
+  const matches = await Promise.all(competitors.map(competitor => performMatch(newBot, competitor)))
   return matches
 }
 
@@ -16,11 +16,11 @@ const performMatch = async (compA, compB) => {
   console.log(`Consisting of ${NUMBER_ROUNDS} rounds`)
 
   // Start the rounds in parallel
-  let rounds = await Promise.all(Array.from({length: NUMBER_ROUNDS}).map(async (_, i) => {
+  const rounds = await Promise.all(Array.from({ length: NUMBER_ROUNDS }).map(async (_, i) => {
     console.log(`Starting round ${i + 1}`)
 
     // Red and blue players alternate each round
-    let competitors = i % 2 === 0 ? [compA, compB] : [compB, compA]
+    const competitors = i % 2 === 0 ? [compA, compB] : [compB, compA]
 
     // Perform round
     return performRound(...competitors)
@@ -32,8 +32,8 @@ const performMatch = async (compA, compB) => {
 
   // Who won? Was it a tie?
   // Award wins to winning bot
-  let AWins = rounds.filter(round => round.players[round.winner].name === compA.name).length
-  let BWins = NUMBER_ROUNDS - AWins
+  const AWins = rounds.filter(round => round.players[round.winner].name === compA.name).length
+  const BWins = NUMBER_ROUNDS - AWins
   let winningCompetitor
   if (AWins === BWins) {
     // Tie

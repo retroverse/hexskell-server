@@ -19,14 +19,14 @@ app.use(cors({
   credentials: true
 }))
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // Setup sessions
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,
   cookie: {
-    httpOnly: false,
+    httpOnly: false
   },
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection })
@@ -39,7 +39,7 @@ app.use('/auth', authRoute)
 const server = new ApolloServer({
   resolvers,
   typeDefs,
-  context: ({req}) => req.session
+  context: ({ req }) => req.session
 })
 server.applyMiddleware({ app, cors: false, bodyParserConfig: false })
 

@@ -24,11 +24,11 @@ const setupSession = async (payload, req) => {
 
   // Get the google user id
   const googleID = payload.sub
-  
+
   // Does a user exist with this google user id?
-  let user = await User.findOne({googleID})
+  const user = await User.findOne({ googleID })
   let toLogin = user
-  
+
   // Create user?
   let registeredNewUser = false
   if (!user) {
@@ -36,7 +36,7 @@ const setupSession = async (payload, req) => {
     console.log(`User with gID ${googleID} doesnt exist yet, creating user...`)
 
     // Create user doc
-    let newUser = new User({
+    const newUser = new User({
       googleID,
       displayName: payload.name // Temporary -> can be changed by user
     })
@@ -57,7 +57,7 @@ const setupSession = async (payload, req) => {
 
 router.post('/login', async (req, res) => {
   // Get token from request
-  const {token} = req.query
+  const { token } = req.query
   if (!token) {
     console.log('Bad request')
     res.status(400).send('Requires "token" query parameter')
@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
     payload = await verifyToken(token)
   } catch (error) {
     console.log(error)
-    res.status(500).json({success: false, error: error.message, message: 'Failed to verify token'})
+    res.status(500).json({ success: false, error: error.message, message: 'Failed to verify token' })
     return
   }
 
@@ -79,12 +79,12 @@ router.post('/login', async (req, res) => {
   try {
     sessionInformation = await setupSession(payload, req)
   } catch (error) {
-    res.status(500).json({success: false, error, message: 'Failed to setup session'})
+    res.status(500).json({ success: false, error, message: 'Failed to setup session' })
     return
   }
 
   // Response
-  res.status(200).json({success: true, ...sessionInformation})
+  res.status(200).json({ success: true, ...sessionInformation })
 })
 
 module.exports = router

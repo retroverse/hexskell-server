@@ -37,4 +37,4 @@ const findOne = (model, args = {}, resolver = identity) => {
   return base.then(resolver)
 }
 
-module.exports = {find, findOne}
+module.exports = { find, findOne }

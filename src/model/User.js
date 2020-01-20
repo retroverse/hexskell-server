@@ -6,7 +6,7 @@ const User = new Schema({
   displayName: String,
   googleID: String,
   dateJoined: { type: Date, default: Date.now },
-  createdBots: [{type: ObjectId, ref: 'bot'}]
+  createdBots: [{ type: ObjectId, ref: 'bot' }]
 })
 
 module.exports = mongoose.model('user', User)

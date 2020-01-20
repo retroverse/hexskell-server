@@ -10,18 +10,18 @@ const resolvers = {
     users: _ =>
       find(User, {}, resolveUser),
 
-    user: (_, {id, displayName, dateJoined}) =>
-      findOne(User, {_id: id, displayName}, resolveUser),
+    user: (_, { id, displayName, dateJoined }) =>
+      findOne(User, { _id: id, displayName }, resolveUser),
 
     me: async (_, args, { isAuth, userID }) => {
-      let user = await getMe(isAuth, userID)
+      const user = await getMe(isAuth, userID)
       return resolveUser(user)
     }
   },
   Mutation: {
-    setUser: async (_, {displayName}, {isAuth, userID}) => {
+    setUser: async (_, { displayName }, { isAuth, userID }) => {
       // Does user exist?
-      let user = await getMe(isAuth, userID)
+      const user = await getMe(isAuth, userID)
 
       // Is it the same name?
       if (user.displayName === displayName) {

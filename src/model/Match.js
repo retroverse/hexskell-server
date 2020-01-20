@@ -3,15 +3,15 @@ const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
 
 const Round = new Schema({
-  players: {red: {type: ObjectId, ref: 'bot'}, blue: {type: ObjectId, ref: 'bot'}},
-  winner: {type: String, lowercase: true, enum: ['red', 'blue']}, // Bot Id (one of the two above)
+  players: { red: { type: ObjectId, ref: 'bot' }, blue: { type: ObjectId, ref: 'bot' } },
+  winner: { type: String, lowercase: true, enum: ['red', 'blue'] }, // Bot Id (one of the two above)
   terminalState: { type: String } // JSON STRING of format {red: [[x, y]], blue: [[x, y]]}
 })
 
 const Match = new Schema({
-  competitors: [{type: ObjectId, ref: 'bot'}],
+  competitors: [{ type: ObjectId, ref: 'bot' }],
   rounds: [Round],
-  winningCompetitor: {type: ObjectId, ref: 'bot'}
+  winningCompetitor: { type: ObjectId, ref: 'bot' }
 })
 
 module.exports = mongoose.model('match', Match)

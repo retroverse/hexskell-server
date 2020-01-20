@@ -18,7 +18,7 @@ const getMe = async (isAuth, userID) => {
   await isLoggedIn(isAuth)
 
   // Find me
-  let me = await User.findById(userID)
+  const me = await User.findById(userID)
   if (!me) {
     throw new AuthenticationError('Invalid Authentication: no such user')
   }
@@ -27,16 +27,16 @@ const getMe = async (isAuth, userID) => {
 }
 
 const ensureOwnBot = async (id, isAuth, userID) => {
-  let me = await getMe(isAuth, userID)
+  const me = await getMe(isAuth, userID)
 
   // Is bot creator me?
-  let bot = await Bot.findById(id)
+  const bot = await Bot.findById(id)
   if (!bot) {
     throw new UserInputError(`Bad Input: No such bot with id "${id}"`)
   }
 
   // Find bot author
-  let author = await User.findById(bot.author)
+  const author = await User.findById(bot.author)
   if (author.id !== me.id) {
     throw new ForbiddenError(`Forbidden: Bot with id "${id}" is not owned by user with id "${me.id}"`)
   }

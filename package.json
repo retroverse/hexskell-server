@@ -6,6 +6,11 @@
   "scripts": {
     "start-db": "docker run -p 27017 --name db mongo"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npx eslint *.js --fix"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/retroverse/hexskell-server.git"
@@ -36,6 +41,13 @@
     "node-fetch": "^2.6.0"
   },
   "devDependencies": {
+    "husky": "^4.0.10",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "nodemon": "^2.0.2"
   }
 }
