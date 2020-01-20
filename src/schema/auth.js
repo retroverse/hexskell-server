@@ -1,16 +1,26 @@
 const Bot = require('../model/Bot')
 const User = require('../model/User')
 
+const {
+  AuthenticationError,
+  UserInputError,
+  ForbiddenError
+} = require('apollo-server-express')
+
+const isLoggedIn = async (isAuth) => {
+  if (!isAuth) {
+    throw new AuthenticationError('Invalid Authentication: must authenticate')
+  }
+}
+
 const getMe = async (isAuth, userID) => {
   // Must be logged in
-  if (!isAuth) {
-    throw Error('Unauthenticated')
-  }
+  await isLoggedIn(isAuth)
 
   // Find me
   let me = await User.findById(userID)
   if (!me) {
-    throw Error('Invalid authentication: no such user')
+    throw new AuthenticationError('Invalid Authentication: no such user')
   }
 
   return me
@@ -22,13 +32,13 @@ const ensureOwnBot = async (id, isAuth, userID) => {
   // Is bot creator me?
   let bot = await Bot.findById(id)
   if (!bot) {
-    throw Error('No such bot')
+    throw new UserInputError(`Bad Input: No such bot with id "${id}"`)
   }
 
   // Find bot author
   let author = await User.findById(bot.author)
   if (author.id !== me.id) {
-    throw Error('Unauthorized')
+    throw new ForbiddenError(`Forbidden: Bot with id "${id}" is not owned by user with id "${me.id}"`)
   }
 
   return bot

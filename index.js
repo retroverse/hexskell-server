@@ -14,7 +14,10 @@ const authRoute = require('./src/routes/auth')
 const app = express()
 
 // Apply middleware
-app.use(cors({credentials: true}))
+app.use(cors({
+  origin: 'http://localhost:1234',
+  credentials: true
+}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
@@ -36,9 +39,9 @@ app.use('/auth', authRoute)
 const server = new ApolloServer({
   resolvers,
   typeDefs,
-  context: async ({req}) => req.session
+  context: ({req}) => req.session
 })
-server.applyMiddleware({app})
+server.applyMiddleware({ app, cors: false, bodyParserConfig: false })
 
 // Mongoose global config
 mongoose.set('useNewUrlParser', true)

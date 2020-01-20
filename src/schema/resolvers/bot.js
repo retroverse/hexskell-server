@@ -1,3 +1,4 @@
+const { UserInputError } = require('apollo-server-express')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
 const { find, findOne } = require('../../util/findModel')
@@ -31,7 +32,7 @@ const botResolvers = {
 
       // Is it already published?
       if (bot.published) {
-        throw Error('Bot is already published')
+        throw new UserInputError(`Bad Input: Bot with id "${id}" is already published`)
       }
 
       // Get already published bots
@@ -83,7 +84,7 @@ const botResolvers = {
       // Does a bot with this name exist?
       let pre = await Bot.findOne({name})
       if (pre) {
-        throw Error('Bot with given name already exists')
+        throw new UserInputError(`Bad Input: Bot with name "${name}" already exists`)
       }
 
       // Create the new bot
@@ -114,7 +115,7 @@ const botResolvers = {
 
       // Are we already published?
       if (bot.published) {
-        throw Error('Cannot update an already published bot')
+        throw new UserInputError(`Bad Input: Cannot update already published bot with id "${bot.id}"`)
       }
 
       // Update bot

@@ -1,8 +1,8 @@
+const { UserInputError } = require('apollo-server-express')
 const Bot = require('../../model/Bot')
 const User = require('../../model/User')
 const { find, findOne } = require('../../util/findModel')
 const { getMe } = require('../auth')
-
 const { resolveUser } = require('./props')
 
 const resolvers = {
@@ -13,7 +13,7 @@ const resolvers = {
     user: (_, {id, displayName, dateJoined}) =>
       findOne(User, {_id: id, displayName}, resolveUser),
 
-    me: async (_, args, {isAuth, userID}) => {
+    me: async (_, args, { isAuth, userID }) => {
       let user = await getMe(isAuth, userID)
       return resolveUser(user)
     }
@@ -25,7 +25,7 @@ const resolvers = {
 
       // Is it the same name?
       if (user.displayName === displayName) {
-        throw Error(`Display name is already "${displayName}"`)
+        throw new UserInputError(`Bad Input: Display name is already "${displayName}"`)
       }
 
       // Update user

@@ -1,3 +1,4 @@
+const { UserInputError } = require('apollo-server-express')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
 const { resolveMatch } = require('./props')
@@ -13,14 +14,16 @@ const resolvers = {
     competeBots: async (_, {competitors}) => {
       // Get competitors from ids
       if (competitors.length !== 2) {
-        throw Error('Requires two competitors')
+        throw new UserInputError('Bad Input: Mutation requires exactly two competitors')
       }
       const [compA, compB] = await Promise.all(competitors.map(id => Bot.findById(id)))
 
       // Do we have them?
-      if (!(compA && compB)) {
-        throw Error('No such bots')
-      }
+      [compA, compB].forEach((bot, i) => {
+        if (!bot) {
+          throw new UserInputError(`Bad Input: No such bot with id "${competitors[i]}"`)
+        }
+      })
 
       // Perform match
       let matchResult = await performMatch(compA, compB)
