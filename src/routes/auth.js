@@ -22,6 +22,8 @@ const verifyToken = async token => {
 const setupSession = async (payload, req) => {
   console.log('Creating auth session')
 
+  console.log(payload)
+
   // Get the google user id
   const googleID = payload.sub
 
@@ -38,12 +40,20 @@ const setupSession = async (payload, req) => {
     // Create user doc
     const newUser = new User({
       googleID,
-      displayName: payload.name // Temporary -> can be changed by user
+      displayName: payload.name, // Temporary -> can be changed by user
+      avatarURL: payload.picture
     })
 
     // Save to db
     registeredNewUser = true
     toLogin = await newUser.save()
+  }
+
+  // Is there any missing information we can add to user doc?
+  if (!toLogin.avatarURL) {
+    console.log('User has no avatar - using google photo property')
+    toLogin.avatarURL = payload.picture
+    await toLogin.save()
   }
 
   // Add information to session

@@ -28,6 +28,12 @@ const resolvers = {
         throw new UserInputError(`Bad Input: Display name is already "${displayName}"`)
       }
 
+      // Is name taken?
+      const existing = await User.findOne({ displayName })
+      if (existing) {
+        throw new UserInputError(`Bad Input: Display name "${displayName}" is taken`)
+      }
+
       // Update user
       user.displayName = displayName
       await user.save()

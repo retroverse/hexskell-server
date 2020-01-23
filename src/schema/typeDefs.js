@@ -49,6 +49,7 @@ const typeDefs = gql`
     displayName: String!
     dateJoined: String!
     createdBots: [Bot!]!
+    avatarURL: String
   }
   
   type Query {
