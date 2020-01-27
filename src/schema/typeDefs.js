@@ -22,7 +22,7 @@ const typeDefs = gql`
     MINE
   }
 
-  type BotRequestOptions {
+  input BotsInput {
     offset: Int,
     amount: Int,
     search: String,
@@ -79,7 +79,7 @@ const typeDefs = gql`
   
   type Query {
     # Bots
-    bots(options: BotRequestOptions): [Bot!]!
+    bots(input: BotsInput): [Bot!]!
     bot(id: ID, name: String): Bot
 
     # Users

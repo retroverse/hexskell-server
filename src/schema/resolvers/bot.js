@@ -8,17 +8,17 @@ const { performTournament } = require('../../tournament')
 
 const botResolvers = {
   Query: {
-    bots: async (_, { options }, { isAuth, userID }) => {
+    bots: async (_, { input }, { isAuth, userID }) => {
       // If there was no options provided then just send every bot
-      if (!options) {
+      if (!input) {
         return find(Bot, {}, resolveBot)
       }
 
       // Create filter obj using provided filters
       let filter = {}
-      if (options.filters) {
+      if (input.filters) {
         // Filter for bots created by authenticated user
-        if (options.filters.includes('MINE')) {
+        if (input.filters.includes('MINE')) {
           // Must be authenticated
           if (!isAuth || !userID) {
             throw new UserInputError('Bad Input: Must be authenticated to use "MINE" bot filter.')
@@ -29,7 +29,7 @@ const botResolvers = {
         }
 
         // Filter for bots that have been published
-        if (options.filters.includes('PUBLISHED')) {
+        if (input.filters.includes('PUBLISHED')) {
           // Add published requirement
           filter = { ...filter, published: true }
         }
@@ -37,10 +37,10 @@ const botResolvers = {
 
       // Sort by given sort method and order
       let sort
-      if (options.sortBy && options.sortOrder) {
+      if (input.sortBy && input.sortOrder) {
         // Discern which document field to sort by
         let sortField
-        switch (options.sortBy) {
+        switch (input.sortBy) {
           case 'ALPHABETICALLY':
             sortField = 'name'
             break
@@ -52,7 +52,7 @@ const botResolvers = {
             break
         }
 
-        const order = options.sortOrder === 'INCREASING' ? 'asc' : 'desc'
+        const order = input.sortOrder === 'INCREASING' ? 'asc' : 'desc'
         sort = { [sortField]: order }
       }
 
@@ -61,8 +61,8 @@ const botResolvers = {
       const { docs: bots, totalPages } = await Bot.paginate(
         filter,
         {
-          offset: options.offset || 0,
-          limit: options.amount || 10,
+          offset: input.offset || 0,
+          limit: input.amount || 10,
           sort
         }
       )
