@@ -5,6 +5,31 @@ const typeDefs = gql`
     RED
     BLUE
   }
+
+  enum SortOrder {
+    INCREASING,
+    DECREASING
+  }
+
+  enum BotSorting {
+    ALPHABETICALLY,
+    DATE_CREATED,
+    NUMBER_WINS
+  }
+
+  enum BotFilter {
+    PUBLISHED,
+    MINE
+  }
+
+  type BotRequestOptions {
+    offset: Int,
+    amount: Int,
+    search: String,
+    filters: [BotFilter!]
+    sortBy: BotSorting,
+    sortOrder: SortOrder
+  }
   
   type Bot {
     id: ID!
@@ -54,7 +79,7 @@ const typeDefs = gql`
   
   type Query {
     # Bots
-    bots(published: Boolean): [Bot!]!
+    bots(options: BotRequestOptions): [Bot!]!
     bot(id: ID, name: String): Bot
 
     # Users

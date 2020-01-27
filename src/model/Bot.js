@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const paginate = require('mongoose-paginate-v2')
 const Schema = mongoose.Schema
 const ObjectId = mongoose.Schema.Types.ObjectId
 
@@ -18,5 +19,8 @@ Bot.virtual('wins').get(async (_, virtual, doc) => {
   const numWonMatches = await Match.countDocuments({ _id: { $in: wonMatchIds } })
   return numWonMatches
 })
+
+// Use mongoose pagination
+Bot.plugin(paginate)
 
 module.exports = mongoose.model('bot', Bot)

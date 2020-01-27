@@ -8,7 +8,71 @@ const { performTournament } = require('../../tournament')
 
 const botResolvers = {
   Query: {
-    bots: (_, { published }) => find(Bot, { published }, resolveBot),
+    bots: async (_, { options }, { isAuth, userID }) => {
+      // If there was no options provided then just send every bot
+      if (!options) {
+        return find(Bot, {}, resolveBot)
+      }
+
+      // Create filter obj using provided filters
+      let filter = {}
+      if (options.filters) {
+        // Filter for bots created by authenticated user
+        if (options.filters.includes('MINE')) {
+          // Must be authenticated
+          if (!isAuth || !userID) {
+            throw new UserInputError('Bad Input: Must be authenticated to use "MINE" bot filter.')
+          }
+
+          // Add user id requirement
+          filter = { ...filter, author: userID }
+        }
+
+        // Filter for bots that have been published
+        if (options.filters.includes('PUBLISHED')) {
+          // Add published requirement
+          filter = { ...filter, published: true }
+        }
+      }
+
+      // Sort by given sort method and order
+      let sort
+      if (options.sortBy && options.sortOrder) {
+        // Discern which document field to sort by
+        let sortField
+        switch (options.sortBy) {
+          case 'ALPHABETICALLY':
+            sortField = 'name'
+            break
+          case 'DATE_CREATED':
+            sortField = 'dateCreated'
+            break
+          case 'NUMBER_WINS':
+            sortField = 'wins'
+            break
+        }
+
+        const order = options.sortOrder === 'INCREASING' ? 'asc' : 'desc'
+        sort = { [sortField]: order }
+      }
+
+      // Get bots based on filters
+      // Defaults to returning first 10 bots
+      const { docs: bots, totalPages } = await Bot.paginate(
+        filter,
+        {
+          offset: options.offset || 0,
+          limit: options.amount || 10,
+          sort
+        }
+      )
+
+      // Do a search #TODO:
+
+      console.log(bots, totalPages)
+
+      return bots
+    },
     bot: (_, { id, name }) => findOne(Bot, { _id: id, name }, resolveBot)
   },
   Mutation: {
