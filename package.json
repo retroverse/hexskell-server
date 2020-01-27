@@ -4,7 +4,7 @@
   "description": "Hexskell backend client",
   "main": "src/index.js",
   "scripts": {
-    "start-db": "docker run -p 27017 --name db mongo"
+    "start": "node index.js"
   },
   "husky": {
     "hooks": {
