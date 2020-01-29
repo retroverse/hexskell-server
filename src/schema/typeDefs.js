@@ -30,6 +30,12 @@ const typeDefs = gql`
     sortBy: BotSorting,
     sortOrder: SortOrder
   }
+
+  type BotsResult {
+    bots: [Bot!]!,
+    totalPages: Int!,
+    currentPage: Int!
+  }
   
   type Bot {
     id: ID!
@@ -79,7 +85,7 @@ const typeDefs = gql`
   
   type Query {
     # Bots
-    bots(input: BotsInput): [Bot!]!
+    bots(input: BotsInput): BotsResult
     bot(id: ID, name: String): Bot
 
     # Users

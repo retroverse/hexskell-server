@@ -1,4 +1,5 @@
 const { UserInputError } = require('apollo-server-express')
+const Fuse = require('fuse.js')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
 const { find, findOne } = require('../../util/findModel')
@@ -11,7 +12,7 @@ const botResolvers = {
     bots: async (_, { input }, { isAuth, userID }) => {
       // If there was no options provided then just send every bot
       if (!input) {
-        return find(Bot, {}, resolveBot)
+        return { bots: await find(Bot, {}, resolveBot), totalPages: 1, currentPage: 1 }
       }
 
       // Create filter obj using provided filters
@@ -37,7 +38,7 @@ const botResolvers = {
 
       // Sort by given sort method and order
       let sort
-      if (input.sortBy && input.sortOrder) {
+      if (input.sortBy) {
         // Discern which document field to sort by
         let sortField
         switch (input.sortBy) {
@@ -52,13 +53,13 @@ const botResolvers = {
             break
         }
 
-        const order = input.sortOrder === 'INCREASING' ? 'asc' : 'desc'
+        const order = input.sortOrder ? (input.sortOrder === 'INCREASING' ? 'asc' : 'desc') : 'asc'
         sort = { [sortField]: order }
       }
 
       // Get bots based on filters
       // Defaults to returning first 10 bots
-      const { docs: bots, totalPages } = await Bot.paginate(
+      const { docs: bots, totalPages, page } = await Bot.paginate(
         filter,
         {
           offset: input.offset || 0,
@@ -67,11 +68,31 @@ const botResolvers = {
         }
       )
 
-      // Do a search #TODO:
+      // Perform fuzzy search with fuse.js
+      let finalBots = bots
+      if (input.search) {
+        const fuse = new Fuse(bots, {
+          threshold: 0.6,
+          sort: !input.sortBy,
+          location: 0,
+          distance: 100,
+          maxPatternLength: 32,
+          minMatchCharLength: 1,
+          keys: [
+            'name'
+          ]
+        }) // "list" is the item array
+        finalBots = fuse.search(input.search)
+      }
 
-      console.log(bots, totalPages)
+      // Resolve props
+      const resolvedBots = await finalBots.map(resolveBot)
 
-      return bots
+      return {
+        bots: resolvedBots,
+        totalPages,
+        currentPage: page
+      }
     },
     bot: (_, { id, name }) => findOne(Bot, { _id: id, name }, resolveBot)
   },
