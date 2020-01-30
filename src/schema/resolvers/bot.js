@@ -1,6 +1,6 @@
 const { UserInputError } = require('apollo-server-express')
-const Fuse = require('fuse.js')
 const Bot = require('../../model/Bot')
+const User = require('../../model/User')
 const Match = require('../../model/Match')
 const { find, findOne } = require('../../util/findModel')
 const { ensureOwnBot, getMe } = require('../auth')
@@ -57,10 +57,26 @@ const botResolvers = {
         sort = { [sortField]: order }
       }
 
+      // Perform search
+      let filteredBotIDs
+      if (input.search) {
+        // ... on bots
+        const filteredBots = await Bot.fuzzySearch(input.search)
+        filteredBotIDs = filteredBots.map(doc => doc.id)
+
+        // ... on users
+        const filteredUsers = await User.fuzzySearch(input.search)
+        const filteredUsersBotIDs = filteredUsers.map(doc => doc.createdBots).reduce((a, b) => a.concat(b), [])
+        filteredBotIDs = filteredBotIDs.concat(filteredUsersBotIDs)
+      }
+
       // Get bots based on filters
       // Defaults to returning first 10 bots
       const { docs: bots, totalPages, page } = await Bot.paginate(
-        filter,
+        {
+          ...filter,
+          ...(filteredBotIDs ? { _id: { $in: filteredBotIDs } } : {})
+        },
         {
           offset: input.offset || 0,
           limit: input.amount || 10,
@@ -68,25 +84,8 @@ const botResolvers = {
         }
       )
 
-      // Perform fuzzy search with fuse.js
-      let finalBots = bots
-      if (input.search) {
-        const fuse = new Fuse(bots, {
-          threshold: 0.6,
-          sort: !input.sortBy,
-          location: 0,
-          distance: 100,
-          maxPatternLength: 32,
-          minMatchCharLength: 1,
-          keys: [
-            'name'
-          ]
-        }) // "list" is the item array
-        finalBots = fuse.search(input.search)
-      }
-
       // Resolve props
-      const resolvedBots = await finalBots.map(resolveBot)
+      const resolvedBots = await bots.map(resolveBot)
 
       return {
         bots: resolvedBots,
