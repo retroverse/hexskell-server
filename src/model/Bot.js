@@ -12,8 +12,17 @@ const Bot = new Schema({
   tournamentMatches: [{ type: ObjectId, ref: 'match' }],
   wonTournamentMatches: [{ type: ObjectId, ref: 'match' }],
   tiedTournamentMatches: [{ type: ObjectId, ref: 'match' }],
+  approxNumWins: { type: Number, default: 0 }, // Not necessarily up to date, (use .wins async virtual for accuracy), used for sorting
   published: { type: Boolean, default: false },
   toBePublished: { type: Boolean, default: false }
+})
+
+// Keep approximate track of number of wins (for sorting purposes only)
+Bot.pre('save', async function () {
+  const Match = mongoose.model('match')
+  const wonMatchIds = this.wonTournamentMatches || []
+  const numWonMatches = await Match.countDocuments({ _id: { $in: wonMatchIds } })
+  this.approxNumWins = numWonMatches
 })
 
 Bot.virtual('wins').get(async (_, virtual, doc) => {

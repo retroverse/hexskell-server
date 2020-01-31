@@ -50,7 +50,7 @@ const botResolvers = {
             sortField = 'dateCreated'
             break
           case 'NUMBER_WINS':
-            sortField = 'wins'
+            sortField = 'approxNumWins'
             break
         }
 
@@ -85,8 +85,20 @@ const botResolvers = {
         }
       )
 
+      const dir = input.sortOrder === 'INCREASING' ? 1 : -1
+      const sortValue = bot => bot && bot.toObject({ virtuals: true })[input.sortField]
+      const sortedBots = bots.sort((a, b) => {
+        const av = sortValue(a)
+        const bv = sortValue(b)
+        if (typeof av === 'string') {
+          return dir * av.localeCompare(bv)
+        } else {
+          return dir * (sortValue(av) - sortValue(bv))
+        }
+      })
+
       // Resolve props
-      const resolvedBots = await bots.map(resolveBot)
+      const resolvedBots = await sortedBots.map(resolveBot)
 
       return {
         bots: resolvedBots,
