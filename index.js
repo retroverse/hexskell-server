@@ -9,6 +9,7 @@ const MongoStore = require('connect-mongo')(session)
 const { resolvers, typeDefs } = require('./src/schema/schema')
 const { PORT, MONGO_DB_NAME, MONGO_DB_IP, SESSION_SECRET } = require('./src/config')
 const authRoute = require('./src/routes/auth')
+const { beginPublishChecks } = require('./src/publishing')
 
 // Create app
 const app = express()
@@ -56,5 +57,8 @@ mongoose.connect(`mongodb://${MONGO_DB_IP}/${MONGO_DB_NAME}`)
     app.listen(PORT, () => {
       console.log(`Listening on ${PORT}.`)
       console.log(`🚀 server available at http://localhost:${PORT}${server.graphqlPath}`)
+
+      // Begin periodic checks to check if bots need publishing and then run tournaments
+      beginPublishChecks(10000)
     })
   })

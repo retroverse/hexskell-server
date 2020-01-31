@@ -1,6 +1,7 @@
 const User = require('../../model/User')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
+const { botRanking } = require('./statistics')
 
 const toQueryRes = obj => obj.toObject({ getters: true })
 const resolveID = obj => ({ ...obj, id: obj._id })
@@ -11,15 +12,18 @@ const resolveLink = (field, model, resolver) => obj => ({
 const resolveLinks = (field, model, resolver) => obj => ({
   ...obj, [field]: model.find({ _id: { $in: obj[field] } }).map(x => x.map(y => y && resolver(y)))
 })
+const resolveRanking = obj => ({
+  ...obj, ranking: _ => botRanking(obj.id)
+})
 
 const resolveBot = obj =>
   Promise.resolve(obj)
     .then(toQueryRes)
     .then(resolveID)
+    .then(resolveRanking)
     .then(resolveDate('dateCreated'))
     .then(resolveLink('author', User, resolveUser))
     .then(resolveLinks('tournamentMatches', Match, resolveMatch))
-    .then(resolveLinks('wonTournamentMatches', Match, resolveMatch))
 
 const resolveUser = obj =>
   Promise.resolve(obj)

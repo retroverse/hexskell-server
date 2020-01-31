@@ -11,7 +11,9 @@ const Bot = new Schema({
   code: String,
   tournamentMatches: [{ type: ObjectId, ref: 'match' }],
   wonTournamentMatches: [{ type: ObjectId, ref: 'match' }],
-  published: { type: Boolean, default: false }
+  tiedTournamentMatches: [{ type: ObjectId, ref: 'match' }],
+  published: { type: Boolean, default: false },
+  toBePublished: { type: Boolean, default: false }
 })
 
 Bot.virtual('wins').get(async (_, virtual, doc) => {
@@ -19,6 +21,13 @@ Bot.virtual('wins').get(async (_, virtual, doc) => {
   const wonMatchIds = doc.wonTournamentMatches || []
   const numWonMatches = await Match.countDocuments({ _id: { $in: wonMatchIds } })
   return numWonMatches
+})
+
+Bot.virtual('ties').get(async (_, virtual, doc) => {
+  const Match = mongoose.model('match')
+  const tiedMatchIds = doc.tiedTournamentMatches || []
+  const numTiedMatches = await Match.countDocuments({ _id: { $in: tiedMatchIds } })
+  return numTiedMatches
 })
 
 // Use mongoose pagination

@@ -1,9 +1,9 @@
 const { UserInputError } = require('apollo-server-express')
-const Bot = require('../../model/Bot')
 const User = require('../../model/User')
 const { find, findOne } = require('../../util/findModel')
 const { getMe } = require('../auth')
 const { resolveUser } = require('./props')
+const { userStatistics } = require('./statistics')
 
 const resolvers = {
   Query: {
@@ -12,6 +12,8 @@ const resolvers = {
 
     user: (_, { id, displayName, dateJoined }) =>
       findOne(User, { _id: id, displayName }, resolveUser),
+
+    userStatistics,
 
     me: async (_, args, { isAuth, userID }) => {
       const user = await getMe(isAuth, userID)

@@ -7,34 +7,54 @@ const typeDefs = gql`
   }
 
   enum SortOrder {
-    INCREASING,
+    INCREASING
     DECREASING
   }
 
   enum BotSorting {
-    ALPHABETICALLY,
-    DATE_CREATED,
+    ALPHABETICALLY
+    DATE_CREATED
     NUMBER_WINS
   }
 
   enum BotFilter {
-    PUBLISHED,
+    PUBLISHED
     MINE
   }
 
   input BotsInput {
-    offset: Int,
-    amount: Int,
-    search: String,
+    offset: Int
+    amount: Int
+    search: String
     filters: [BotFilter!]
-    sortBy: BotSorting,
+    sortBy: BotSorting
     sortOrder: SortOrder
   }
 
   type BotsResult {
-    bots: [Bot!]!,
-    totalPages: Int!,
+    bots: [Bot!]!
+    totalPages: Int!
     currentPage: Int!
+  }
+
+  type BotStatistics {
+    wins: Int!
+    ties: Int!
+    losses: Int!
+    numMatches: Int!
+    ranking: Int!
+    winRate: Float!
+    winRateBlue: Float!
+    winRateRed: Float!
+    redWinPercentage: Float!
+    averageGameLength: Float! # Average across all matches
+  }
+
+  type UserStatistics {
+    totalWins: Int!
+    totalTies: Int!
+    totalLosses: Int!
+    bestRanking: Int
   }
   
   type Bot {
@@ -45,8 +65,9 @@ const typeDefs = gql`
     dateCreated: String!
     published: Boolean!
     tournamentMatches: [Match!]!
-    wonTournamentMatches: [Match!]!
     wins: Int!
+    ties: Int!
+    ranking: Int
   }
 
   type Piece {
@@ -87,11 +108,13 @@ const typeDefs = gql`
     # Bots
     bots(input: BotsInput): BotsResult
     bot(id: ID, name: String): Bot
+    botStatistics(id: ID!): BotStatistics
 
     # Users
     me: User  # uses session to return info on currently logged-in user
     users: [User!]!
     user(id: ID, displayName: String): User
+    userStatistics(id: ID): UserStatistics
 
     # Matches
     matches: [Match!]!
