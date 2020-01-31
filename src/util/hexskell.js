@@ -11,9 +11,9 @@ const hexskell = (redCode, blueCode) => {
   ).then(
     response => response.json()
   )
-    .catch(
-      err => { throw err }
-    )
+  .catch(
+    err => { throw Error(`Fetch request to HEXSKELL Core-API failed: ${err}`) }
+  )
 }
 
 // SAMPLE CODE: const empty = getAllCheckers(grid).filter(checker => checker.team === 'neutral'); return empty[0]

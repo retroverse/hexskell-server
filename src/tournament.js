@@ -28,6 +28,9 @@ const performMatch = async (compA, compB) => {
         console.log(`Winner of round ${i + 1} is ${round.players[round.winner].name}`)
         return round
       })
+      .catch(err => {
+        console.error(`An error occured while performing round ${i + 1}`, err)
+      })
   }))
 
   // Who won? Was it a tie?
@@ -60,8 +63,11 @@ const performMatch = async (compA, compB) => {
 
 const performRound = async (redBot, blueBot) => {
   const gameResult = await hexskell(redBot.code, blueBot.code)
+    .catch(err => {
+      throw Error(`Game execution failed: ${err}`)
+    })
   if (!gameResult) {
-    throw Error('Failed to run match')
+    throw Error('Failed to run match, no result')
   }
 
   const round = {
