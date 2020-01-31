@@ -22,6 +22,12 @@ const typeDefs = gql`
     MINE
   }
 
+  enum PublishingStatus {
+    PUBLISHED
+    PUBLISHING
+    NOT_PUBLISHED
+  }
+
   input BotsInput {
     offset: Int
     amount: Int
@@ -64,6 +70,7 @@ const typeDefs = gql`
     author: User!
     dateCreated: String!
     published: Boolean!
+    publishingStatus: PublishingStatus!
     tournamentMatches: [Match!]!
     wins: Int!
     ties: Int!
@@ -112,6 +119,7 @@ const typeDefs = gql`
 
     # Users
     me: User  # uses session to return info on currently logged-in user
+    myStatistics: UserStatistics
     users: [User!]!
     user(id: ID, displayName: String): User
     userStatistics(id: ID): UserStatistics

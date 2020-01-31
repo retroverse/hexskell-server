@@ -3,7 +3,7 @@ const User = require('../../model/User')
 const { find, findOne } = require('../../util/findModel')
 const { getMe } = require('../auth')
 const { resolveUser } = require('./props')
-const { userStatistics } = require('./statistics')
+const { userStatistics, calculateUserStatistics } = require('./statistics')
 
 const resolvers = {
   Query: {
@@ -18,6 +18,11 @@ const resolvers = {
     me: async (_, args, { isAuth, userID }) => {
       const user = await getMe(isAuth, userID)
       return resolveUser(user)
+    },
+
+    myStatistics: async (_, args, { isAuth, userID }) => {
+      const user = await getMe(isAuth, userID)
+      return calculateUserStatistics(user)
     }
   },
   Mutation: {

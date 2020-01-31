@@ -34,6 +34,10 @@ const userStatistics = async (_, { id }) => {
     throw new UserInputError(`Bad Input: No such user with id "${id}"`)
   }
 
+  return calculateUserStatistics(user)
+}
+
+const calculateUserStatistics = async (user) => {
   // Find users bots
   const bots = await Bot.find({ _id: { $in: user.createdBots } })
   const botNumResults = await Promise.all(bots.map(bot => calculateBotMatchResults(bot)))
@@ -171,6 +175,9 @@ const calculateBotStatistics = async (bot) => {
 
 module.exports = {
   userStatistics,
+  calculateUserStatistics,
+  calculateBotMatchResults,
+  calculateBotRanking,
   botStatistics,
   botRanking
 }

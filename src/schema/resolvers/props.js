@@ -15,6 +15,11 @@ const resolveLinks = (field, model, resolver) => obj => ({
 const resolveRanking = obj => ({
   ...obj, ranking: _ => botRanking(obj.id)
 })
+const resolvePublishingStatus = obj => ({
+  ...obj, publishingStatus: _ => obj.published ? 'PUBLISHED' : (
+    obj.toBePublished ? 'PUBLISHING' : 'NOT_PUBLISHED'
+  )
+})
 
 const resolveBot = obj =>
   Promise.resolve(obj)
@@ -24,6 +29,7 @@ const resolveBot = obj =>
     .then(resolveDate('dateCreated'))
     .then(resolveLink('author', User, resolveUser))
     .then(resolveLinks('tournamentMatches', Match, resolveMatch))
+    .then(resolvePublishingStatus)
 
 const resolveUser = obj =>
   Promise.resolve(obj)
