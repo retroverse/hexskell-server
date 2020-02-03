@@ -61,6 +61,8 @@ const typeDefs = gql`
     totalTies: Int!
     totalLosses: Int!
     bestRanking: Int
+    bestIndividualWins: Int
+    botCount: Int!
   }
   
   type Bot {

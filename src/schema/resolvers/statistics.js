@@ -50,12 +50,18 @@ const calculateUserStatistics = async (user) => {
   const bestRanking = rankings
     .filter(x => !!x)
     .sort()[0]
+  
+  // Calculate best individual wins
+  const winsPerBot = botNumResults.map(res => res.wins)
+  const bestIndividualWins = bots.length > 0 ? Math.max(...winsPerBot) : 0
 
   return {
     totalLosses,
     totalTies,
     totalWins,
-    bestRanking
+    bestRanking,
+    bestIndividualWins,
+    botCount: bots.length
   }
 }
 
