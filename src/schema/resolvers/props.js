@@ -16,7 +16,8 @@ const resolveRanking = obj => ({
   ...obj, ranking: _ => botRanking(obj.id)
 })
 const resolvePublishingStatus = obj => ({
-  ...obj, publishingStatus: _ => obj.published ? 'PUBLISHED' : (
+  ...obj,
+  publishingStatus: _ => obj.published ? 'PUBLISHED' : (
     obj.toBePublished ? 'PUBLISHING' : 'NOT_PUBLISHED'
   )
 })
@@ -46,9 +47,10 @@ const resolveGameState = obj => ({
 
 const resolveRound = obj =>
   Promise.resolve(obj)
-    .then(toQueryRes)
+    .then(obj => ({ ...obj, winningCompetitor: _ => Bot.findById(obj.players[obj.winner]).then(resolveBot) }))
     .then(obj => ({ ...obj, winner: obj.winner.toUpperCase() }))
-    .then(obj => ({ ...obj, redPlayer: resolveBot(obj.players.red), bluePlayer: resolveBot(obj.players.blue) }))
+    .then(obj => ({ ...obj, redPlayer: _ => Bot.findById(obj.players.red).then(resolveBot) }))
+    .then(obj => ({ ...obj, bluePlayer: _ => Bot.findById(obj.players.blue).then(resolveBot) }))
     .then(obj => ({
       ...obj,
       terminalState: resolveGameState(JSON.parse(obj.terminalState)),

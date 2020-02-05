@@ -93,6 +93,7 @@ const typeDefs = gql`
     redPlayer: Bot!
     bluePlayer: Bot!
     winner: Player!
+    winningCompetitor: Bot!
     terminalState: GameState!
     terminalStateStr: String!
   }
