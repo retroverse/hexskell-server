@@ -151,8 +151,8 @@ const calculateBotStatistics = async (bot) => {
   const winRate = wonRounds.length / rounds.length
   const redWins = wonRoundsAsRed.length
   const blueWins = wonRoundsAsBlue.length
-  const winRateBlue = blueWins / rounds.length
-  const winRateRed = redWins / rounds.length
+  const winRateBlue = blueWins / rounds.filter(round => sameRef(round.players.blue, bot)).length
+  const winRateRed = redWins / rounds.filter(round => sameRef(round.players.red, bot)).length
   const redWinPercentage = wonRounds.length === 0 ? 0 : redWins / wonRounds.length
 
   // Parse each game state
