@@ -1,4 +1,5 @@
 const hexskell = require('./util/hexskell')
+const transformScript = require('./scripts')
 
 const NUMBER_ROUNDS = 4 // must be even
 
@@ -25,6 +26,7 @@ const performMatch = async (compA, compB) => {
     // Perform round
     return performRound(...competitors)
       .then(round => {
+        console.log(`Competitors were ${competitors[0].name} and ${competitors[1].name}`)
         console.log(`Winner of round ${i + 1} is ${round.players[round.winner].name}`)
         return round
       })
@@ -62,7 +64,12 @@ const performMatch = async (compA, compB) => {
 }
 
 const performRound = async (redBot, blueBot) => {
-  const gameResult = await hexskell(redBot.code, blueBot.code)
+
+  // Apply script transformations
+  const redBotCode = await transformScript(redBot.code)
+  const blueBotCode = await transformScript(blueBot.code)
+
+  const gameResult = await hexskell(redBotCode, blueBotCode)
     .catch(err => {
       throw Error(`Game execution failed: ${err}`)
     })

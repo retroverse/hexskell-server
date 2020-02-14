@@ -7,7 +7,11 @@ const {
 
 const hexskell = (redCode, blueCode) => {
   return fetch(
-    `http://${HEXSKELL_SERVER_ADDRESS}:${HEXSKELL_SERVER_PORT}?redCode=${redCode}&blueCode=${blueCode}`
+    `http://${HEXSKELL_SERVER_ADDRESS}:${HEXSKELL_SERVER_PORT}`,
+    {
+      method: 'post',
+      body: JSON.stringify({ redCode, blueCode })
+    }
   ).then(
     response => response.json()
   )
