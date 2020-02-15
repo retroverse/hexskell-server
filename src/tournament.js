@@ -62,7 +62,7 @@ const performMatch = async (compA, compB) => {
   return {
     competitors: [compA.id, compB.id],
     rounds,
-    errors: rounds.map(round => round.error)
+    errors: rounds.map(round => round.error),
     winningCompetitor
   }
 }
