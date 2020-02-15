@@ -8,9 +8,15 @@ const Round = new Schema({
   terminalState: { type: String } // JSON STRING of format {red: [[x, y]], blue: [[x, y]]}
 })
 
+const BotError = new Schema({
+  bot: { type: ObjectId, ref: 'bot' },
+  message: String
+})
+
 const Match = new Schema({
   competitors: [{ type: ObjectId, ref: 'bot' }],
   rounds: [Round],
+  botErrors: [BotError],
   winningCompetitor: { type: ObjectId, ref: 'bot' }
 })
 

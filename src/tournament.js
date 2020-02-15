@@ -23,8 +23,11 @@ const performMatch = async (compA, compB) => {
     // Red and blue players alternate each round
     const competitors = i % 2 === 0 ? [compA, compB] : [compB, compA]
 
+    // Script Transformations (resolve import statements)
+    const [redCode, blueCode] = await Promise.all(competitors.map(c => transformScript(c.code)))
+
     // Perform round
-    return performRound(...competitors)
+    return performRound(redCode, blueCode, ...competitors)
       .then(round => {
         console.log(`Competitors were ${competitors[0].name} and ${competitors[1].name}`)
         console.log(`Winner of round ${i + 1} is ${round.players[round.winner].name}`)
@@ -59,22 +62,31 @@ const performMatch = async (compA, compB) => {
   return {
     competitors: [compA.id, compB.id],
     rounds,
+    errors: rounds.map(round => round.error)
     winningCompetitor
   }
 }
 
-const performRound = async (redBot, blueBot) => {
+const performRound = async (redCode, blueCode, redBot, blueBot) => {
 
-  // Apply script transformations
-  const redBotCode = await transformScript(redBot.code)
-  const blueBotCode = await transformScript(blueBot.code)
-
-  const gameResult = await hexskell(redBotCode, blueBotCode)
+  // Call to hexskell server and await response
+  const gameResult = await hexskell(redCode, blueCode)
     .catch(err => {
       throw Error(`Game execution failed: ${err}`)
     })
+
+  // Did we get a result
   if (!gameResult) {
     throw Error('Failed to run match, no result')
+  }
+
+  // Check for a bot error
+  let error
+  if (gameResult.error) {
+    console.log('An error occured')
+    const bot = gameResult.winner.toLowerCase() === 'red' ? blueBot : redBot
+    const message = gameResult.error
+    error = { bot, message }
   }
 
   const round = {
@@ -86,7 +98,8 @@ const performRound = async (redBot, blueBot) => {
     terminalState: JSON.stringify({
       red: gameResult.checkers.red,
       blue: gameResult.checkers.blue
-    })
+    }),
+    error
   }
 
   return round
