@@ -22,8 +22,6 @@ const verifyToken = async token => {
 const setupSession = async (payload, req) => {
   console.log('Creating auth session')
 
-  console.log(payload)
-
   // Get the google user id
   const googleID = payload.sub
 
