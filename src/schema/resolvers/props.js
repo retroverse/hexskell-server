@@ -56,6 +56,10 @@ const resolveRound = obj =>
       terminalState: resolveGameState(JSON.parse(obj.terminalState)),
       terminalStateStr: obj.terminalState
     }))
+  
+const resolveBotError = obj =>
+  Promise.resolve(obj)
+    .then(obj => ({...obj, bot: Bot.findById(obj.bot).then(resolveBot)}))  
 
 const resolveMatch = obj =>
   Promise.resolve(obj)
@@ -65,5 +69,6 @@ const resolveMatch = obj =>
     .then(resolveLink('winningCompetitor', Bot, resolveBot))
     .then(obj => ({ ...obj, round: ({ number }) => obj.rounds[number - 1] && resolveRound(obj.rounds[number - 1]) }))
     .then(obj => ({ ...obj, rounds: _ => obj.rounds.map(resolveRound) }))
+    .then(obj => ({ ...obj, botErrors: _ => obj.botErrors.map(resolveBotError) }))
 
 module.exports = { resolveBot, resolveUser, resolveMatch }

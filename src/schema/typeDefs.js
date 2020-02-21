@@ -98,12 +98,18 @@ const typeDefs = gql`
     terminalStateStr: String!
   }
 
+  type BotError {
+    bot: Bot!
+    message: String!
+  }
+
   type Match {
     id: ID!
     rounds: [Round!]!
     round(number: Int!): Round
     competitors: [Bot!]!
     winningCompetitor: Bot
+    botErrors: [BotError!]!
   }
 
   type User {
@@ -128,6 +134,7 @@ const typeDefs = gql`
     userStatistics(id: ID): UserStatistics
 
     # Matches
+    match(id: ID!): Match
     matches: [Match!]!
   }
 

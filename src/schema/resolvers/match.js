@@ -2,11 +2,12 @@ const { UserInputError } = require('apollo-server-express')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
 const { resolveMatch } = require('./props')
-const { find } = require('../../util/findModel')
+const { find, findOne } = require('../../util/findModel')
 const { performMatch } = require('../../tournament')
 
 const resolvers = {
   Query: {
+    match: (_, { id }) => findOne(Match, { _id: id }, resolveMatch),
     matches: (_) => find(Match, undefined, resolveMatch)
   },
   Mutation: {
