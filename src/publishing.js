@@ -22,7 +22,8 @@ const performPublishCheck = async () => {
 
 const unpublish = async (bot) => {
   // Remove matches that include this bot
-  await Match.deleteMany({ competitors: { $in: [bot] } })
+  const { deletedCount } = await Match.deleteMany({ competitors: { $in: [bot] } })
+  console.log(`Deleted (${deletedCount}) matches where '${bot.name}' was a competitor`)
 }
 
 const publish = async (bot) => {

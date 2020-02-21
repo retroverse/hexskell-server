@@ -173,8 +173,8 @@ const botResolvers = {
       // Check auth and that bot is own
       const bot = await ensureOwnBot(id, isAuth, userID)
 
-      // Remove matches that include this bot
-      Match.deleteMany({ competitors: { $in: [bot] } })
+      // Unpublish
+      await unpublish(bot)
 
       // Remove bot then resolve and return old one
       const old = await Bot.findByIdAndDelete(id)
