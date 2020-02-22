@@ -95,10 +95,10 @@ const performRound = async (redCode, blueCode, redBot, blueBot) => {
 
   // Add meta information to each log (turn, bot, player etc)
   let logsByTurnRed = gameResult.logs.red.map((messages, i) => messages.map((message, j) => (
-    { message, turn: i + 1, logNumber: j, player: 'red', bot: redBot }
+    { message, turn: (i * 2) + 1, logNumber: j, player: 'red', bot: redBot }
   )))
   let logsByTurnBlue = gameResult.logs.blue.map((messages, i) => messages.map((message, j) => (
-    { message, turn: i + 1, logNumber: j, player: 'blue', bot: blueBot }
+    { message, turn: (i * 2) + 2, logNumber: j, player: 'blue', bot: blueBot }
   )))
   
   // Concatenate logs into a single array for each player
