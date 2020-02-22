@@ -15,10 +15,21 @@ const BotError = new Schema({
   round: Number
 })
 
+const BotLogs = new Schema({
+  bot: { type: ObjectId, ref: 'bot' },
+  message: String,
+  player: { type: String, lowercase: true, enum: ['red', 'blue'] },
+  round: Number,
+  turn: Number,
+  logNumber: Number, // Which log in the given turn this is, can be used to sort for chronological order
+})
+
+
 const Match = new Schema({
   competitors: [{ type: ObjectId, ref: 'bot' }],
   rounds: [Round],
   botErrors: [BotError],
+  botLogs: [BotLogs],
   winningCompetitor: { type: ObjectId, ref: 'bot' }
 })
 

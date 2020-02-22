@@ -100,9 +100,18 @@ const typeDefs = gql`
 
   type BotError {
     bot: Bot!
-    player: Player
-    round: Int
+    player: Player!
+    round: Int!
     message: String!
+  }
+
+  type BotLog {
+    bot: Bot!
+    player: Player!
+    round: Int!
+    message: String!
+    turn: Int!
+    logNumber: Int! # Which log this is in the given turn of the given round
   }
 
   type Match {
@@ -112,6 +121,7 @@ const typeDefs = gql`
     competitors: [Bot!]!
     winningCompetitor: Bot
     botErrors: [BotError!]!
+    botLogs: [BotLog!]!
   }
 
   type User {

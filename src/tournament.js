@@ -59,10 +59,14 @@ const performMatch = async (compA, compB) => {
     }
   }
 
+  const roundLogs = rounds.map((round, i) => round.logs.map(log => ({...log, round: i + 1})))
+  const botLogs = roundLogs.reduce((a, b) => a.concat(b), [])
+
   return {
     competitors: [compA.id, compB.id],
     rounds,
-    botErrors: rounds.map((round, i) => ({ ...round.error, round: i + 1 })).filter(x => x),
+    botErrors: rounds.filter(round => round.error).map((round, i) => ({ ...round.error, round: i + 1 })).filter(x => x),
+    botLogs,
     winningCompetitor
   }
 }
@@ -83,12 +87,24 @@ const performRound = async (redCode, blueCode, redBot, blueBot) => {
   // Check for a bot error
   let error = undefined
   if (gameResult.error) {
-    console.log('An error occured')
     const bot = gameResult.winner.toLowerCase() === 'red' ? blueBot : redBot
     const player = gameResult.winner.toLowerCase() === 'red' ? 'blue' : 'red'
     const message = gameResult.error
     error = { bot, message, player }
   }
+
+  // Add meta information to each log (turn, bot, player etc)
+  let logsByTurnRed = gameResult.logs.red.map((messages, i) => messages.map((message, j) => (
+    { message, turn: i + 1, logNumber: j, player: 'red', bot: redBot }
+  )))
+  let logsByTurnBlue = gameResult.logs.blue.map((messages, i) => messages.map((message, j) => (
+    { message, turn: i + 1, logNumber: j, player: 'blue', bot: blueBot }
+  )))
+  
+  // Concatenate logs into a single array for each player
+  let redLogs = logsByTurnRed.reduce((a, b) => a.concat(b), [])
+  let blueLogs = logsByTurnBlue.reduce((a, b) => a.concat(b), [])
+  let logs = redLogs.concat(blueLogs)
 
   const round = {
     players: {
@@ -100,7 +116,8 @@ const performRound = async (redCode, blueCode, redBot, blueBot) => {
       red: gameResult.checkers.red,
       blue: gameResult.checkers.blue
     }),
-    error
+    error,
+    logs
   }
 
   return round
