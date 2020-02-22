@@ -100,6 +100,8 @@ const typeDefs = gql`
 
   type BotError {
     bot: Bot!
+    player: Player
+    round: Int
     message: String!
   }
 

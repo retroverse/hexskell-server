@@ -10,7 +10,9 @@ const Round = new Schema({
 
 const BotError = new Schema({
   bot: { type: ObjectId, ref: 'bot' },
-  message: String
+  message: String,
+  player: { type: String, lowercase: true, enum: ['red', 'blue'] },
+  round: Number
 })
 
 const Match = new Schema({

@@ -59,7 +59,8 @@ const resolveRound = obj =>
   
 const resolveBotError = obj =>
   Promise.resolve(obj)
-    .then(obj => ({...obj, bot: Bot.findById(obj.bot).then(resolveBot)}))  
+    .then(obj => ({...obj, bot: Bot.findById(obj.bot).then(resolveBot)}))
+    .then(obj => ({...obj, player: obj.player.toUpperCase()}))
 
 const resolveMatch = obj =>
   Promise.resolve(obj)

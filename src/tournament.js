@@ -62,7 +62,7 @@ const performMatch = async (compA, compB) => {
   return {
     competitors: [compA.id, compB.id],
     rounds,
-    botErrors: rounds.map(round => round.error).filter(x => x),
+    botErrors: rounds.map((round, i) => ({ ...round.error, round: i + 1 })).filter(x => x),
     winningCompetitor
   }
 }
@@ -85,8 +85,9 @@ const performRound = async (redCode, blueCode, redBot, blueBot) => {
   if (gameResult.error) {
     console.log('An error occured')
     const bot = gameResult.winner.toLowerCase() === 'red' ? blueBot : redBot
+    const player = gameResult.winner.toLowerCase() === 'red' ? 'blue' : 'red'
     const message = gameResult.error
-    error = { bot, message }
+    error = { bot, message, player }
   }
 
   const round = {
