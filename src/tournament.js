@@ -123,4 +123,52 @@ const performRound = async (redCode, blueCode, redBot, blueBot) => {
   return round
 }
 
-module.exports = { performMatch, performRound, performTournament }
+// Perform a one-off round from bot scripts
+const performTestRound = async (scripts) => {
+
+  const [redCode, blueCode] = await Promise.all(scripts.map(transformScript))
+  const gameResult = await hexskell(redCode, blueCode)
+    .catch(err => {
+      throw Error(`Game execution failed: ${err}`)
+    })
+
+  // Did we get a result
+  if (!gameResult) {
+    throw Error('Failed to run match, no result')
+  }
+
+  // Check for a bot error
+  let error = undefined
+  if (gameResult.error) {
+    const player = gameResult.winner.toLowerCase() === 'red' ? 'blue' : 'red'
+    const message = gameResult.error
+    error = { message, player }
+  }
+
+  // Add meta information to each log (turn, bot, player etc)
+  let logsByTurnRed = gameResult.logs.red.map((messages, i) => messages.map((message, j) => (
+    { message, turn: (i * 2) + 1, logNumber: j, player: 'red' }
+  )))
+  let logsByTurnBlue = gameResult.logs.blue.map((messages, i) => messages.map((message, j) => (
+    { message, turn: (i * 2) + 2, logNumber: j, player: 'blue' }
+  )))
+  
+  // Concatenate logs into a single array for each player
+  let redLogs = logsByTurnRed.reduce((a, b) => a.concat(b), [])
+  let blueLogs = logsByTurnBlue.reduce((a, b) => a.concat(b), [])
+  let logs = redLogs.concat(blueLogs)
+
+  const round = {
+    winner: gameResult.winner.toLowerCase(),
+    terminalState: JSON.stringify({
+      red: gameResult.checkers.red,
+      blue: gameResult.checkers.blue
+    }),
+    error,
+    logs
+  }
+
+  return round
+}
+
+module.exports = { performMatch, performRound, performTournament, performTestRound }

@@ -56,12 +56,23 @@ const resolveRound = obj =>
       terminalState: resolveGameState(JSON.parse(obj.terminalState)),
       terminalStateStr: obj.terminalState
     }))
-  
+
 // For both logs and errors
 const resolveBotMessage = obj =>
   Promise.resolve(obj)
-    .then(obj => ({...obj, bot: Bot.findById(obj.bot).then(resolveBot)}))
+    .then(obj => ({...obj, bot: obj.bot && Bot.findById(obj.bot).then(resolveBot)}))
     .then(obj => ({...obj, player: obj.player.toUpperCase()}))
+
+const resolveTestRound = obj =>
+  Promise.resolve(obj)
+    .then(obj => ({ ...obj, winner: obj.winner.toUpperCase() }))
+    .then(obj => ({
+      ...obj,
+      terminalState: resolveGameState(JSON.parse(obj.terminalState)),
+      terminalStateStr: obj.terminalState
+    }))
+    .then(obj => ({ ...obj, botErrors: _ => obj.botErrors.map(resolveBotMessage) }))
+    .then(obj => ({ ...obj, botLogs: _ => obj.botLogs.map(resolveBotMessage) }))
 
 const resolveMatch = obj =>
   Promise.resolve(obj)
@@ -74,4 +85,4 @@ const resolveMatch = obj =>
     .then(obj => ({ ...obj, botErrors: _ => obj.botErrors.map(resolveBotMessage) }))
     .then(obj => ({ ...obj, botLogs: _ => obj.botLogs.map(resolveBotMessage) }))
 
-module.exports = { resolveBot, resolveUser, resolveMatch }
+module.exports = { resolveBot, resolveUser, resolveMatch, resolveTestRound }

@@ -98,6 +98,14 @@ const typeDefs = gql`
     terminalStateStr: String!
   }
 
+  type TestRound {
+    winner: Player!
+    terminalState: GameState!
+    terminalStateStr: String!
+    botErrors: [BotError!]!
+    botLogs: [BotLog!]!
+  }
+
   type BotError {
     bot: Bot!
     player: Player!
@@ -164,6 +172,7 @@ const typeDefs = gql`
 
     # Matches
     competeBots(competitors: [ID!]!): Match
+    competeScripts(scripts: [String!]!): TestRound # Compete [red, blue] scripts without requiring making bots. Returns an extended round result
     removeMatches: [Match]
   }
 `

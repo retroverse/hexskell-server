@@ -1,9 +1,9 @@
 const { UserInputError } = require('apollo-server-express')
 const Bot = require('../../model/Bot')
 const Match = require('../../model/Match')
-const { resolveMatch } = require('./props')
+const { resolveMatch, resolveTestRound } = require('./props')
 const { find, findOne } = require('../../util/findModel')
-const { performMatch } = require('../../tournament')
+const { performMatch, performTestRound } = require('../../tournament')
 
 const resolvers = {
   Query: {
@@ -34,6 +34,20 @@ const resolvers = {
 
       // Resolve and return
       return resolveMatch(match)
+    },
+    competeScripts: async (_, { scripts }) => {
+      let [redScript, blueScript] = scripts
+      if (redScript === undefined || blueScript === undefined) {
+        throw new UserInputError('Bad Input: Mutation requires two scripts')
+      }
+
+      const roundResult = await performTestRound(scripts)
+
+      return resolveTestRound({
+        ...roundResult,
+        botErrors: [roundResult.error].filter(x => x),
+        botLogs: roundResult.logs.filter(x => x)
+      })
     }
   }
 }
