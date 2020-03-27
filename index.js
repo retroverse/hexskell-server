@@ -7,7 +7,7 @@ const session = require('express-session')
 const MongoStore = require('connect-mongo')(session)
 
 const { resolvers, typeDefs } = require('./src/schema/schema')
-const { PORT, MONGO_DB_NAME, MONGO_DB_IP, SESSION_SECRET } = require('./src/config')
+const { PORT, MONGO_DB_NAME, MONGO_DB_IP, SESSION_SECRET, FRONT_END_HOST } = require('./src/config')
 const authRoute = require('./src/routes/auth')
 const { beginPublishChecks } = require('./src/publishing')
 
@@ -16,7 +16,7 @@ const app = express()
 
 // Apply middleware
 app.use(cors({
-  origin: 'http://localhost:1234',
+  origin: `http://${FRONT_END_HOST}`,
   credentials: true
 }))
 app.use(bodyParser.json())
